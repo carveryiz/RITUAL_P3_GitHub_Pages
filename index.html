@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0a0b0e" />
+  <title>RITUAL Performance Arranger</title>
+  <link rel="stylesheet" href="./editor.css" />
+</head>
+<body>
+  <header class="appbar">
+    <div class="brand"><span class="mark">R</span><div><small>RITUAL FRAMEWORK</small><strong>PERFORMANCE ARRANGER <em>P3</em></strong></div></div>
+    <div class="song-head"><label>当前歌曲</label><select id="songSelect"><option>03 · THE CORRECTION</option><option>04 · BEER IN THE VEINS</option><option>01 · FOR WORSE</option></select><span>120 BPM</span><span>4 / 4</span><span>32 BARS</span></div>
+    <div class="actions"><button id="guideBtn" class="subtle">操作说明</button><button id="saveBtn" class="save">保存配置资产</button><button id="levelBtn" class="primary">▶ 模拟关卡播放</button></div>
+  </header>
+  <div class="mode-banner"><b>开发者配置工具</b><span>这里配置一次，关卡运行时自动播放；它不是给玩家操作的导播台。</span><i id="saveState">● 已保存 · P3_TheCorrection_Arrangement</i></div>
+
+  <main class="layout">
+    <aside class="left-panel">
+      <section>
+        <div class="panel-title"><span>01</span><b>输入资产</b></div>
+        <div class="asset-card active"><i class="icon">♪</i><div><small>SONG / MUSIC FACTS</small><b>TheCorrection_MusicData</b><em>Section、Bar、Beat 已读取</em></div><u>✓</u></div>
+        <div class="asset-card"><i class="icon">✦</i><div><small>P2 LIGHTING</small><b>P2_TheCorrection_Lighting</b><em>14 Cues · 4 Light Groups</em></div><u>✓</u></div>
+        <div class="asset-card"><i class="icon">▰</i><div><small>STAGE PROFILE</small><b>Stage_Club_To_Arena</b><em>3 个舞台成长阶段</em></div><u>✓</u></div>
+      </section>
+      <section>
+        <div class="panel-title"><span>02</span><b>添加 P3 表现</b></div>
+        <p class="tool-help">先把播放头移到目标位置，再添加事件。</p>
+        <div class="tool-grid">
+          <button data-add="framing"><i>▣</i><b>基础构图</b><small>镜头距离 / 俯角</small></button>
+          <button data-add="shake"><i>≋</i><b>声压震动</b><small>连续表现层</small></button>
+          <button data-add="impact"><i>✦</i><b>冲击事件</b><small>重拍 / Boss</small></button>
+          <button data-add="screen"><i>▤</i><b>屏幕节目</b><small>乐手 / POV</small></button>
+          <button data-add="focus"><i>◎</i><b>关注引导</b><small>Boss / 危险侧</small></button>
+          <button data-add="transition"><i>⇥</i><b>舞台过渡</b><small>场馆成长</small></button>
+        </div>
+        <button id="generateBtn" class="generate">✦ 根据 P2 自动生成建议</button>
+      </section>
+      <section class="legend-section"><div class="panel-title"><span>03</span><b>颜色说明</b></div><div class="legend"><span><i class="p2"></i>P2 已有数据</span><span><i class="base"></i>P3 构图</span><span><i class="behavior"></i>P3 表现</span><span><i class="screen"></i>舞台屏幕</span></div></section>
+    </aside>
+
+    <section class="center-panel">
+      <div class="preview-head"><div><span class="panel-index">04</span><b>关卡画面预览</b><small>PLAY MODE PREVIEW</small></div><div class="compare"><label>预览层</label><button data-view="p2">仅 P2</button><button data-view="full" class="active">P2 + P3</button></div></div>
+      <div class="preview-shell">
+        <canvas id="stageCanvas"></canvas>
+        <div class="preview-hud">
+          <span class="camera-info" id="cameraInfo">MASTER WIDE · DIST 18.0 · TILT −12°</span><span class="section-info" id="sectionInfo">INTRO / BAR 01</span>
+          <div class="safe-frame"><small>GAMEPLAY SAFE FRAME</small></div><div class="reticle"><i></i></div>
+          <div class="screen-tags"><span id="tagLeft">AUX L · GUITAR</span><span id="tagWall">LED WALL · STAGE</span><span id="tagRight">AUX R · DRUM</span></div>
+          <div class="active-stack"><small>当前生效</small><b id="activeBase">Club Master Wide</b><b id="activeBehavior">Gentle Drift</b><b id="activeScreen">Stage Wide</b></div>
+          <div class="logic-note"><i></i><span>HUD / AIM LOGIC</span><b>STABLE</b></div>
+        </div>
+      </div>
+      <div class="transport">
+        <button id="playBtn" class="play">Ⅱ</button><div class="clock"><b id="timecode">00:00.0</b><small id="barBeat">BAR 01 · BEAT 1</small></div>
+        <button id="stopBtn" class="transport-btn">■</button><button id="prevBar" class="transport-btn">|◀</button><button id="nextBar" class="transport-btn">▶|</button>
+        <label class="snap"><input id="snapToggle" type="checkbox" checked> 吸附到小节</label><div class="runtime-status"><i></i><span>MUSIC TRANSPORT</span><b id="runtimeState">RUNNING</b></div>
+      </div>
+      <div class="timeline-wrap" id="timelineWrap"><div class="timeline-scroll">
+        <div class="ruler timeline-row"><div class="track-label"><b>TIME</b><small>120 BPM</small></div><div class="lane ruler-lane" id="rulerLane"></div></div>
+        <div class="section-track timeline-row"><div class="track-label p2-label"><b>P2 · SECTION</b><small>Music Facts</small></div><div class="lane" id="sectionLane"></div></div>
+        <div class="cue-track timeline-row"><div class="track-label p2-label"><b>P2 · LIGHT CUES</b><small>只读参考</small></div><div class="lane cue-lane" id="lightLane"></div></div>
+        <div class="track-divider"><span>P3 CAMERA ARRANGEMENT</span><button id="collapseP2">隐藏 P2 参考轨</button></div>
+        <div class="timeline-row"><div class="track-label"><b>BASE FRAMING</b><small>基础构图</small></div><div class="lane p3-lane" data-track="base"></div></div>
+        <div class="timeline-row"><div class="track-label"><b>BEHAVIOR</b><small>震动 / 推拉</small></div><div class="lane p3-lane" data-track="behavior"></div></div>
+        <div class="timeline-row"><div class="track-label"><b>IMPACT</b><small>单次事件</small></div><div class="lane p3-lane compact-lane" data-track="impact"></div></div>
+        <div class="timeline-row"><div class="track-label"><b>LED WALL</b><small>背景大屏</small></div><div class="lane p3-lane" data-track="wall"></div></div>
+        <div class="timeline-row"><div class="track-label"><b>AUX L / R</b><small>左右侧屏</small></div><div class="lane p3-lane" data-track="aux"></div></div>
+        <div class="playhead" id="playhead"><i></i><span></span></div>
+      </div></div>
+    </section>
+
+    <aside class="right-panel">
+      <div class="panel-title"><span>05</span><b>事件参数</b><em>INSPECTOR</em></div>
+      <div class="selection-head"><i id="selectedIcon">≋</i><div><small id="selectedType">CAMERA BEHAVIOR</small><input id="clipName" value="Breakdown Pressure Shake" /></div><button id="deleteBtn">×</button></div>
+      <div class="inspector-group"><div class="group-title">触发与时间</div>
+        <label class="field"><span>开始位置</span><div><input id="startBar" type="number" min="1" max="32" value="15"><small>BAR</small></div></label>
+        <label class="field"><span>持续时间</span><div><input id="durationBars" type="number" min="1" max="32" value="5"><small>BARS</small></div></label>
+        <label class="field"><span>时间量化</span><select id="quantize"><option>Bar</option><option>Beat</option><option>Section</option></select></label>
+        <label class="field"><span>触发来源</span><select id="triggerSource"><option>Music Timeline</option><option>P2 Cue</option><option>Gameplay Event</option></select></label>
+      </div>
+      <div class="inspector-group" id="bindingGroup"><div class="group-title">与 P2 的关系</div>
+        <label class="field"><span>绑定信号</span><select id="binding"><option>P2 · Breakdown_Strobe</option><option>P2 · Build_Chase</option><option>Music · Energy</option><option>Music · Bass Band</option><option>无绑定</option></select></label>
+        <label class="field"><span>信号用途</span><select id="bindingMode"><option>调制强度</option><option>触发一次</option><option>仅同步时间</option></select></label>
+        <div class="signal-preview"><span>INPUT</span><canvas id="signalCanvas"></canvas><b id="signalValue">82%</b></div>
+      </div>
+      <div class="inspector-group"><div class="group-title">表现参数</div>
+        <label class="range-field"><span>震动幅度 <output id="ampOut">0.42</output></span><input id="ampRange" type="range" min="0" max="100" value="42"></label>
+        <label class="range-field"><span>震动频率 <output id="freqOut">18 Hz</output></span><input id="freqRange" type="range" min="1" max="30" value="18"></label>
+        <label class="range-field"><span>平滑进入 <output id="blendOut">0.25 s</output></span><input id="blendRange" type="range" min="0" max="100" value="25"></label>
+        <label class="field"><span>作用层</span><select id="targetLayer"><option>Render Camera Only</option><option>Camera Rig</option><option>Stage Screens</option></select></label>
+      </div>
+      <div class="safety-card"><b>安全约束</b><span><i>✓</i> 不影响瞄准逻辑</span><span><i>✓</i> 不移动 Combat Safe Frame</span><span><i>✓</i> 最大位移限制 2.4 px</span></div>
+      <div class="runtime-card"><small>RUNTIME OUTPUT</small><b>P3_TheCorrection_Arrangement.asset</b><p>关卡开始时由 PerformanceDirector 读取，并跟随 MusicTransport 自动求值。</p><button id="jsonBtn">查看配置结果</button></div>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast"><i>✓</i><div><b>已生成 P3 建议</b><span>根据 P2 Cue 创建了 6 个可编辑事件</span></div></div>
+  <dialog id="guideDialog"><button class="close" id="closeGuide">×</button><small>正确的使用方式</small><h2>从歌曲到关卡自动演出的完整流程</h2><ol><li><b>读取已有成果</b><span>歌曲的 Section / Bar Grid 与 P2 灯光配置作为只读参考轨进入编辑器。</span></li><li><b>配置 P3 事件</b><span>在时间轴添加构图、震动、冲击和大屏节目；事件可以绑定 P2 Cue，但不会修改 P2。</span></li><li><b>同步预览</b><span>拖动播放头或播放歌曲，同时看到灯光、镜头和舞台屏幕的最终叠加结果。</span></li><li><b>保存配置资产</b><span>输出一份 Arrangement Asset。关卡只负责加载它，运行时按照 MusicTransport 自动播放。</span></li></ol><button class="primary" id="closeAndPlay">明白，播放一遍</button></dialog>
+  <dialog id="jsonDialog" class="json-dialog"><button class="close" id="closeJson">×</button><small>CONFIGURATION PREVIEW</small><h2>P3 配置资产示意</h2><pre id="jsonPreview"></pre></dialog>
+  <script type="module" src="./editor.js"></script>
+</body></html>
