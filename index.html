@@ -98,5 +98,5 @@
   <div class="toast" id="toast"><i>✓</i><div><b>已生成 P3 建议</b><span>根据 P2 Cue 创建了 6 个可编辑事件</span></div></div>
   <dialog id="guideDialog"><button class="close" id="closeGuide">×</button><small>正确的使用方式</small><h2>从歌曲到关卡自动演出的完整流程</h2><ol><li><b>读取已有成果</b><span>歌曲的 Section / Bar Grid 与 P2 灯光配置作为只读参考轨进入编辑器。</span></li><li><b>配置 P3 事件</b><span>在时间轴添加构图、震动、冲击和大屏节目；事件可以绑定 P2 Cue，但不会修改 P2。</span></li><li><b>同步预览</b><span>拖动播放头或播放歌曲，同时看到灯光、镜头和舞台屏幕的最终叠加结果。</span></li><li><b>保存配置资产</b><span>输出一份 Arrangement Asset。关卡只负责加载它，运行时按照 MusicTransport 自动播放。</span></li></ol><button class="primary" id="closeAndPlay">明白，播放一遍</button></dialog>
   <dialog id="jsonDialog" class="json-dialog"><button class="close" id="closeJson">×</button><small>CONFIGURATION PREVIEW</small><h2>P3 配置资产示意</h2><pre id="jsonPreview"></pre></dialog>
-  <script type="module" src="./editor.js"></script>
+  <script defer src="./editor.js?v=0.3.1-fresh"></script>
 </body></html>
